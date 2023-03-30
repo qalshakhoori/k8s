@@ -11,7 +11,7 @@ jobs:
       - run:
           name: gcloud setup
           command: |
-            curl https://sdk.cloud.google.com | bash > /dev/null;
+            curl https://sdk.cloud.google.com | bash > /dev/null -y;
             source $HOME/google-cloud-sdk/path.bash.inc
             gcloud components update kubectl
             echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
