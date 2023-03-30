@@ -1,20 +1,29 @@
 version: 2.1
 jobs:
-  build:
+  gcloud:
     docker:
-      - image: google/cloud-sdk
-        auth:
-          username: $DOCKER_USERNAME
-          password: $DOCKER_PASSWORD
+      # - image: google/cloud-sdk
+      #   auth:
+      #     username: $DOCKER_USERNAME
+      #     password: $DOCKER_PASSWORD
+      - image: cimg/base:2023.03
     steps:
       - run:
           name: gcloud setup
           command: |
+            curl https://sdk.cloud.google.com | bash > /dev/null;
+            source $HOME/google-cloud-sdk/path.bash.inc
+            gcloud components update kubectl
             echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
             gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
             gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
-            gcloud --quiet components update kubectl
             gcloud container clusters get credentials ${CLUSTER_NAME}
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
             docker build -t stephengrider/react-test -f ./client/Dockerfile.dev ./client
             docker run -e CI=true stephengrider/react-test npm test
+
+workflows:
+  build_and_test:
+    jobs:
+      - gcloud
+      # - test
