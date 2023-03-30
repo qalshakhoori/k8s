@@ -1,0 +1,8 @@
+resources:
+  - name: cluster
+    type: container.v1.cluster
+    properties:
+      zone: europe-west1-b
+      cluster:
+        description: 'k8s course cluster'
+        initialNodeCount: 1
