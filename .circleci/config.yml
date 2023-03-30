@@ -1,14 +1,18 @@
-version: '2.1'
-orbs:
-  gcp-cli: circleci/gcp-cli@2.4.1
+version: 2.1
 jobs:
-  use-gcp:
-    executor: gcp-cli/default
-    steps:
-      - gcp-cli/setup:
-          version: 404.0.0
-workflows:
-  install_and_configure_cli:
-    jobs:
-      - use-gcp:
-          context: myContext
+  deploy:
+    docker:
+      - image: google/cloud-sdk
+        auth:
+          username: $DOCKER_USERNAME
+          password: $DOCKER_PASSWORD
+  steps:
+    - run: |
+        echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+        gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
+        gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
+        gcloud --quiet components update kubectl
+        gcloud container clusters get credentials ${CLUSTER_NAME}
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        docker build -t stephengrider/react-test -f ./client/Dockerfile.dev ./client
+        docker run -e CI=true stephengrider/react-test npm test
