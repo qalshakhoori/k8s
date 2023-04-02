@@ -15,7 +15,8 @@ jobs:
             bash install.sh --disable-prompts
             source $HOME/google-cloud-sdk/path.bash.inc
             gcloud components update kubectl
-            echo $GCLOUD_SERVICE_KEY | gcloud auth activate-service-account --key-file=-
+            echo "$GCLOUD_SERVICE_KEY" >> service-account.json
+            gcloud auth activate-service-account --key-file service-account.json
             gcloud config set project k8s-deployment-382006
             gcloud config set compute/zone europe-west1-b
             gcloud container clusters get-credentials cluster
