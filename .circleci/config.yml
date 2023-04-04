@@ -31,6 +31,7 @@ jobs:
       - deploy:
           name: build, push and update k8s cluster images
           command: |
+            chmod +x deploy.sh
             ./deploy.sh
 
 workflows:
