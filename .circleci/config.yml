@@ -1,6 +1,6 @@
 version: 2.1
 jobs:
-  gcloud:
+  build_test_deploy:
     docker:
       - image: cimg/base:2023.03
     steps:
@@ -17,11 +17,11 @@ jobs:
             gcloud config set compute/zone europe-west1-b
             gcloud container clusters get-credentials cluster
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-            docker build -t qassimov/react-test -f ./client/Dockerfile.dev ./client
+            docker build -t qassimov/react-test -f ../client/Dockerfile.dev ../client
             docker run -e CI=true qassimov/react-test npm test
-
+            ../deploy.sh
 workflows:
-  build_and_test:
+  cicd:
     jobs:
-      - gcloud
+      - build_test_deploy
       # - test
