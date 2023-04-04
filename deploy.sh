@@ -1,6 +1,6 @@
-docker build -t qassimov/multi-client:latest -t qassimov/multi-client:$SHA -f ../client/Dockerfile ../client
-docker build -t qassimov/multi-server:latest -t qassimov/multi-server:$SHA -f ../server/Dockerfile ../server
-docker build -t qassimov/multi-worker:latest -t qassimov/multi-worker:$SHA -f ../worker/Dockerfile ../worker
+docker build -t qassimov/multi-client:latest -t qassimov/multi-client:$SHA -f ./client/Dockerfile ./client
+docker build -t qassimov/multi-server:latest -t qassimov/multi-server:$SHA -f ./server/Dockerfile ./server
+docker build -t qassimov/multi-worker:latest -t qassimov/multi-worker:$SHA -f ./worker/Dockerfile ./worker
 
 docker push qassimov/multi-client:latest
 docker push qassimov/multi-client:$SHA

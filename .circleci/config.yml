@@ -21,7 +21,7 @@ jobs:
       - run:
           name: run unit test
           command: |
-            docker build -t qassimov/react-test -f ../client/Dockerfile.dev ../client
+            docker build -t qassimov/react-test -f ./client/Dockerfile.dev ./client
             docker run -e CI=true qassimov/react-test npm test
       - run:
           name: login to docker hub
@@ -30,7 +30,7 @@ jobs:
       - deploy:
           name: build, push and update k8s cluster images
           command: |
-            ../deploy.sh
+            ./deploy.sh
 
 workflows:
   cicd:
