@@ -31,3 +31,8 @@ jobs:
           name: build, push and update k8s cluster images
           command: |
             ../deploy.sh
+
+workflows:
+  cicd:
+    jobs:
+      - build_test_deploy
