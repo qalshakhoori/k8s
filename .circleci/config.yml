@@ -30,6 +30,8 @@ jobs:
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - deploy:
           name: build, push and update k8s cluster images
+          environment:
+            SHA: $(git rev-parse HEAD)
           command: |
             chmod +x deploy.sh
             ./deploy.sh
