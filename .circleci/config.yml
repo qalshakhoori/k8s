@@ -4,10 +4,10 @@ jobs:
     docker:
       - image: cimg/base:2023.03
     steps:
+      - checkout
       - run:
-          name: build test deploy
+          name: install and configure gcloud
           command: |
-            checkout
             curl https://sdk.cloud.google.com > install.sh
             bash install.sh --disable-prompts
             source $HOME/google-cloud-sdk/path.bash.inc
@@ -17,12 +17,17 @@ jobs:
             gcloud config set project k8s-deployment-382006
             gcloud config set compute/zone europe-west1-b
             gcloud container clusters get-credentials cluster
-            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+      - run:
+          name: run unit test
+          command: |
             docker build -t qassimov/react-test -f ../client/Dockerfile.dev ../client
             docker run -e CI=true qassimov/react-test npm test
+      - run:
+          name: login to docker hub
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - deploy:
+          name: build, push and update k8s cluster images
+          command: |
             ../deploy.sh
-workflows:
-  cicd:
-    jobs:
-      - build_test_deploy
-      # - test
