@@ -18,6 +18,7 @@ jobs:
             gcloud config set project k8s-deployment-382006
             gcloud config set compute/zone europe-west1-b
             gcloud container clusters get-credentials cluster
+            kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.0/aio/deploy/recommended.yaml
             docker build -t qassimov/react-test -f ./client/Dockerfile.dev ./client
             docker run -e CI=true qassimov/react-test npm test
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
