@@ -7,7 +7,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
-          name: install and configure gcloud
+          name: build test deploy
           command: |
             curl https://sdk.cloud.google.com > install.sh
             bash install.sh --disable-prompts
@@ -18,21 +18,9 @@ jobs:
             gcloud config set project k8s-deployment-382006
             gcloud config set compute/zone europe-west1-b
             gcloud container clusters get-credentials cluster
-
-      - run:
-          name: run unit test
-          command: |
             docker build -t qassimov/react-test -f ./client/Dockerfile.dev ./client
             docker run -e CI=true qassimov/react-test npm test
-      - run:
-          name: login to docker hub
-          command: |
             echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - deploy:
-          name: build, push and update k8s cluster images
-          # environment:
-          #   SHA: $(git rev-parse HEAD)
-          command: |
             docker build -t qassimov/multi-client:latest -t "qassimov/multi-client:${CIRCLE_SHA1}" -f ./client/Dockerfile ./client
             docker build -t qassimov/multi-server:latest -t "qassimov/multi-server:${CIRCLE_SHA1}" -f ./server/Dockerfile ./server
             docker build -t qassimov/multi-worker:latest -t "qassimov/multi-worker:${CIRCLE_SHA1}" -f ./worker/Dockerfile ./worker
@@ -46,7 +34,6 @@ jobs:
             kubectl set image deployments/server-deployment server="qassimov/multi-server:${CIRCLE_SHA1}"
             kubectl set image deployments/client-deployment client="qassimov/multi-client:${CIRCLE_SHA1}"
             kubectl set image deployments/worker-deployment worker="qassimov/multi-worker:${CIRCLE_SHA1}"
-
 workflows:
   cicd:
     jobs:
